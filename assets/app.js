@@ -9,12 +9,15 @@
   // la cerimonia va dalle 17:00 all'01:00 della notte successiva
   var WINDOW_START = '2026-09-12T17:00';
   var WINDOW_END = '2026-09-13T01:00';
+  // il dettaglio ora per ora parte invece dalle 8 del mattino
+  var DAY_START = '2026-09-12T08:00';
 
   var LAT = 41.9345, LON = 12.2394;
   var LIVE_URL =
     'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
     '&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,is_day' +
-    '&hourly=temperature_2m,precipitation_probability,weather_code' +
+    '&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,' +
+    'weather_code,wind_speed_10m,cloud_cover,relative_humidity_2m' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max' +
     '&timezone=Europe%2FRome&forecast_days=16';
 
@@ -254,14 +257,23 @@
       '</div>';
   }
 
-  /* ---------------- finestra della cerimonia ---------------- */
+  /* ---------------- finestre orarie del giorno ---------------- */
 
-  function windowSlice(d) {
+  // sintesi della cerimonia: 17:00 - 01:00
+  function windowSlice(d) { return sliceRange(d, WINDOW_START, WINDOW_END); }
+  // dettaglio ora per ora: dalle 8:00 all'01:00
+  function daySlice(d) { return sliceRange(d, DAY_START, WINDOW_END); }
+
+  function hoursBetween(a, b) {
+    return Math.round((new Date(b + ':00Z') - new Date(a + ':00Z')) / 3600000);
+  }
+
+  function sliceRange(d, from, to) {
     if (!d.hourly || !d.hourly.time) return null;
-    var a = d.hourly.time.indexOf(WINDOW_START);
+    var a = d.hourly.time.indexOf(from);
     if (a === -1) return null;
-    var b = d.hourly.time.indexOf(WINDOW_END);
-    if (b === -1 || b < a) b = Math.min(a + 8, d.hourly.time.length - 1);
+    var b = d.hourly.time.indexOf(to);
+    if (b === -1 || b < a) b = Math.min(a + hoursBetween(from, to), d.hourly.time.length - 1);
     if (b - a < 1) return null;
 
     var h = d.hourly;
@@ -342,7 +354,7 @@
     });
 
     if (o.kind === 'column') {
-      var bw = Math.min(24, band - 10);
+      var bw = Math.min(24, Math.max(4, band * 0.66));
       o.values.forEach(function (v, i) {
         if (typeof v !== 'number') return;
         var y = yOf(v);
@@ -371,7 +383,7 @@
     var hiIdx = -1, hiVal = -Infinity;
     vals.forEach(function (v, i) { if (typeof v === 'number' && v > hiVal) { hiVal = v; hiIdx = i; } });
     var labelled = {};
-    [0, vals.length - 1, hiIdx].forEach(function (i) {
+    [0, vals.length - 1, hiIdx, (o.mark == null ? -1 : o.mark)].forEach(function (i) {
       if (i < 0 || labelled[i] || typeof vals[i] !== 'number') return;
       labelled[i] = 1;
       var y = yOf(vals[i]) - 12;
@@ -379,11 +391,21 @@
         o.fmtTick(vals[i]) + '</text>';
     });
 
+    var labelStep = Math.max(1, Math.ceil(24 / band));
     o.labels.forEach(function (l, i) {
+      if (i % labelStep !== 0 && i !== o.mark) return;
       g += '<text class="ax" x="' + xMid(i) + '" y="' + (H - 9) + '" text-anchor="middle">' + l + '</text>';
     });
 
     g += '<line class="axis" x1="' + PL + '" y1="' + base + '" x2="' + (W - PR) + '" y2="' + base + '"/>';
+
+    // riga verticale sull'ora della cerimonia: dalle 8 del mattino serve un riferimento
+    if (o.mark != null && o.mark >= 0) {
+      var mx = xMid(o.mark);
+      g += '<line class="cue-line" x1="' + mx + '" y1="' + PT + '" x2="' + mx + '" y2="' + base + '"/>';
+      g += '<text class="cue-lbl" x="' + Math.max(PL + 22, Math.min(W - PR - 22, mx)) +
+        '" y="' + (PT - 6) + '" text-anchor="middle">ore 17 &#183; il s\u00ec</text>';
+    }
 
     // aree di hover: più larghe dei segni, così il puntatore le prende sempre
     o.values.forEach(function (v, i) {
@@ -420,11 +442,11 @@
 
   function renderHourly(d) {
     var box = document.getElementById('hourly-detail');
-    var w = windowSlice(d);
+    var w = daySlice(d);
 
     if (!w) {
       var n = daysUntilWedding();
-      box.innerHTML = '<p class="wd-pending">Il dettaglio ora per ora della serata comparirà qui quando ' +
+      box.innerHTML = '<p class="wd-pending">Il dettaglio ora per ora della giornata comparirà qui quando ' +
         'il 12 settembre entrerà nei 16 giorni coperti dal modello' +
         (n > 16 ? ' — tra circa <strong>' + (n - 16) + '</strong> ' + (n - 16 === 1 ? 'giorno' : 'giorni') + '.' : '.') +
         '</p>';
@@ -432,6 +454,7 @@
     }
 
     var labels = w.time.map(hourLabel);
+    var cue = w.time.indexOf(WEDDING_HOUR);
     var popTips = w.time.map(function (t, i) {
       return hourLabel(t) + ':00 — ' + (w.pop[i] == null ? 'n.d.' : w.pop[i] + '% di pioggia') +
         (w.prec[i] ? ' · ' + w.prec[i] + ' mm' : '');
@@ -439,9 +462,6 @@
     var tempTips = w.time.map(function (t, i) {
       return hourLabel(t) + ':00 — ' + r(w.temp[i]) + '° (percepiti ' + r(w.feels[i]) + '°)';
     });
-
-    var tLo = minOf(w.temp), tHi = maxOf(w.temp);
-    var tTicks = niceTicks(Math.floor(tLo - 1), Math.ceil(tHi + 1));
 
     var rows = '';
     for (var k = 0; k < w.time.length; k++) {
@@ -457,13 +477,13 @@
 
     box.innerHTML =
       '<div class="chart-card"><div class="chart-head">' +
-        '<h3>Probabilità di pioggia</h3><p>ora per ora, dalle 17:00 all’01:00</p></div>' +
+        '<h3>Probabilità di pioggia</h3><p>ora per ora, dalle 8:00 all’01:00</p></div>' +
         '<div class="chart-box" id="chart-rain"></div></div>' +
       '<div class="chart-card"><div class="chart-head">' +
         '<h3>Temperatura</h3><p>passa il dito o il mouse per i gradi percepiti</p></div>' +
         '<div class="chart-box" id="chart-temp"></div></div>' +
       '<div class="table-wrap"><table class="hourly">' +
-        '<caption class="visually-hidden">Previsioni ora per ora dalle 17:00 all’01:00 a Tragliata</caption>' +
+        '<caption class="visually-hidden">Previsioni ora per ora dalle 8:00 all’01:00 del 12 settembre 2026 a Tragliata</caption>' +
         '<thead><tr><th scope="col">Ora</th><th scope="col">Cielo</th><th scope="col">Temp.</th>' +
         '<th scope="col">Pioggia</th><th scope="col">Vento km/h</th><th scope="col">Nuvole</th></tr></thead>' +
         '<tbody>' + rows + '</tbody></table></div>';
@@ -481,17 +501,17 @@
       };
 
       mount('chart-rain', {
-        kind: 'column', values: w.pop, labels: labels, tips: popTips,
+        kind: 'column', values: w.pop, labels: labels, tips: popTips, mark: cue,
         yMin: 0, yMax: 100, ticks: [0, 25, 50, 75, 100],
         fmtTick: function (v) { return v + '%'; }, cls: 'c-rain',
-        aria: 'Probabilità di pioggia ora per ora dalle 17 all’1, da ' + w.pop[0] + '% a ' + w.pop[w.pop.length - 1] + '%'
+        aria: 'Probabilità di pioggia ora per ora dalle 8 all’1, da ' + w.pop[0] + '% a ' + w.pop[w.pop.length - 1] + '%'
       });
 
       mount('chart-temp', {
-        kind: 'line', values: w.temp, labels: labels, tips: tempTips,
+        kind: 'line', values: w.temp, labels: labels, tips: tempTips, mark: cue,
         yMin: tTicks[0], yMax: tTicks[tTicks.length - 1], ticks: tTicks,
         fmtTick: function (v) { return Math.round(v) + '°'; }, cls: 'c-temp',
-        aria: 'Temperatura ora per ora dalle 17 all’1, da ' + r(w.temp[0]) + ' a ' + r(w.temp[w.temp.length - 1]) + ' gradi'
+        aria: 'Temperatura ora per ora dalle 8 all’1, da ' + r(w.temp[0]) + ' a ' + r(w.temp[w.temp.length - 1]) + ' gradi'
       });
     }
 

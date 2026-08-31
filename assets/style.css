@@ -411,6 +411,15 @@ footer a:hover { text-decoration: underline; }
 .chart .val { fill: var(--ink-soft); font-size: 12px; font-weight: 500; font-family: Inter, sans-serif; }
 .chart .hit { fill: transparent; cursor: default; }
 
+/* riferimento verticale sull'ora della cerimonia */
+.chart .cue-line { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 4; opacity: .7; }
+.chart .cue-lbl {
+  fill: var(--accent);
+  font-size: 10px;
+  font-family: Inter, sans-serif;
+  letter-spacing: .06em;
+}
+
 .c-rain .mark path { fill: var(--c-rain); }
 .c-temp .line { fill: none; stroke: var(--c-temp); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .c-temp .area { fill: var(--c-temp); opacity: .1; }
