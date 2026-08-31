@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12 settembre 2026 — Countdown &amp; meteo a Tragliata</title>
+<meta name="description" content="Countdown al 12 settembre 2026 e previsioni meteo per Tragliata (Fiumicino, Roma), aggiornate ogni 4 ore.">
+<meta name="theme-color" content="#f7f4ee">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="hero">
+  <p class="kicker">Il nostro matrimonio</p>
+  <h1 class="date-title"><span>12</span> <span class="month">settembre</span> <span>2026</span></h1>
+  <p class="place">Tragliata &middot; Fiumicino, Roma</p>
+</header>
+
+<main>
+
+  <section class="countdown-wrap" aria-labelledby="cd-h">
+    <h2 id="cd-h" class="visually-hidden">Countdown</h2>
+    <div class="countdown" id="countdown" role="timer" aria-live="off">
+      <div class="unit"><span class="num" id="cd-days">—</span><span class="lbl">giorni</span></div>
+      <div class="sep" aria-hidden="true"></div>
+      <div class="unit"><span class="num" id="cd-hours">—</span><span class="lbl">ore</span></div>
+      <div class="sep" aria-hidden="true"></div>
+      <div class="unit"><span class="num" id="cd-mins">—</span><span class="lbl">minuti</span></div>
+      <div class="sep" aria-hidden="true"></div>
+      <div class="unit"><span class="num" id="cd-secs">—</span><span class="lbl">secondi</span></div>
+    </div>
+    <p class="cd-note" id="cd-note">al 12 settembre 2026, ore 00:00 (ora italiana)</p>
+  </section>
+
+  <div class="rule" aria-hidden="true"><span></span>&#10047;<span></span></div>
+
+  <section class="panel" aria-labelledby="wd-h">
+    <h2 id="wd-h" class="section-title">Il meteo del grande giorno</h2>
+    <div class="wedding-card" id="wedding-card">
+      <p class="loading">Caricamento previsioni…</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="now-h">
+    <h2 id="now-h" class="section-title">Adesso a Tragliata</h2>
+    <div class="now-card" id="now-card">
+      <p class="loading">Caricamento previsioni…</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="fc-h">
+    <h2 id="fc-h" class="section-title">Prossimi giorni</h2>
+    <div class="forecast-scroll">
+      <div class="forecast" id="forecast">
+        <p class="loading">Caricamento previsioni…</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p id="updated">—</p>
+  <p class="credits">Dati meteo <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a> &middot; aggiornati automaticamente ogni 4 ore</p>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
