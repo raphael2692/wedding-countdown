@@ -2,10 +2,11 @@
 
 Sito statico che mostra:
 
-- il **countdown** al 12 settembre 2026, ore 00:00 (ora italiana);
+- il **countdown** a sabato 12 settembre 2026, ore 17:00 (ora italiana);
 - le **previsioni meteo** per **Tragliata** (Fiumicino, Roma — 41.9345 N, 12.2394 E):
-  condizioni attuali, i prossimi 8 giorni e una scheda dedicata al giorno del matrimonio
-  (compare quando la data rientra nei 16 giorni coperti dal modello).
+  condizioni attuali, i prossimi giorni e una scheda dedicata al giorno del matrimonio,
+  con il meteo puntuale alle 17:00 (compare quando la data rientra nei 16 giorni
+  coperti dal modello).
 
 Dati da [Open-Meteo](https://open-meteo.com/) — gratuito, senza API key.
 
@@ -71,6 +72,6 @@ python3 -m http.server 8000       # poi apri http://localhost:8000
 
 ## Personalizzazioni rapide
 
-- **Data/ora**: `TARGET` e `WEDDING_DAY` in `assets/app.js`, più il titolo in `index.html`.
+- **Data/ora**: `TARGET`, `WEDDING_DAY` e `WEDDING_HOUR` in `assets/app.js`, più il titolo in `index.html`.
 - **Luogo**: `LAT`/`LON` in `scripts/fetch-weather.js` **e** in `assets/app.js`.
 - **Frequenza**: la riga `cron:` in `.github/workflows/weather.yml`.

@@ -2,14 +2,16 @@
 (function () {
   'use strict';
 
-  // 12 settembre 2026, 00:00 ora italiana (CEST = UTC+2 a settembre)
-  var TARGET = new Date('2026-09-12T00:00:00+02:00').getTime();
+  // sabato 12 settembre 2026, ore 17:00 italiane (CEST = UTC+2 a settembre)
+  var TARGET = new Date('2026-09-12T17:00:00+02:00').getTime();
   var WEDDING_DAY = '2026-09-12';
+  var WEDDING_HOUR = '2026-09-12T17:00';
 
   var LAT = 41.9345, LON = 12.2394;
   var LIVE_URL =
     'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
     '&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,is_day' +
+    '&hourly=temperature_2m,precipitation_probability,weather_code' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max' +
     '&timezone=Europe%2FRome&forecast_days=16';
 
@@ -159,6 +161,24 @@
     }
 
     var code = d.daily.weather_code[i];
+
+    // meteo puntuale all'ora della cerimonia, se i dati orari sono disponibili
+    var hour = '';
+    var hi = d.hourly && d.hourly.time ? d.hourly.time.indexOf(WEDDING_HOUR) : -1;
+    if (hi !== -1) {
+      var hcode = d.hourly.weather_code[hi];
+      var hpp = d.hourly.precipitation_probability ? d.hourly.precipitation_probability[hi] : null;
+      hour =
+        '<div class="wd-hour">' +
+          '<span class="k">Al momento del sì &middot; ore 17:00</span>' +
+          '<span class="h-line">' + icon(hcode, 30) +
+            '<b>' + r(d.hourly.temperature_2m[hi]) + '°</b>' +
+            '<span class="h-desc">' + describe(hcode) +
+            (hpp == null ? '' : ' &middot; pioggia ' + hpp + '%') + '</span>' +
+          '</span>' +
+        '</div>';
+    }
+
     box.innerHTML =
       '<div class="wd-grid">' +
         '<div class="wd-main">' + icon(code, 62) +
@@ -176,7 +196,7 @@
           stat('Alba', fmtHm(d.daily.sunrise[i])) +
           stat('Tramonto', fmtHm(d.daily.sunset[i])) +
         '</div>' +
-      '</div>';
+      '</div>' + hour;
   }
 
   function renderNow(d) {
