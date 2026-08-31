@@ -3,10 +3,16 @@
 Sito statico che mostra:
 
 - il **countdown** a sabato 12 settembre 2026, ore 17:00 (ora italiana);
-- le **previsioni meteo** per **Tragliata** (Fiumicino, Roma — 41.9345 N, 12.2394 E):
-  condizioni attuali, i prossimi giorni e una scheda dedicata al giorno del matrimonio,
-  con il meteo puntuale alle 17:00 (compare quando la data rientra nei 16 giorni
-  coperti dal modello).
+- le **previsioni meteo** per **Tragliata** (Fiumicino, Roma — 41.9345 N, 12.2394 E),
+  centrate sulla **finestra della cerimonia, 17:00 – 01:00**:
+  - una scheda che riassume *quella finestra* (non le 24 ore) più il meteo puntuale alle 17:00;
+  - il dettaglio **ora per ora** con due grafici (probabilità di pioggia, temperatura)
+    e una tabella con cielo, temperatura, pioggia, vento e nuvolosità;
+  - le condizioni attuali.
+
+  Il riepilogo giornaliero resta come contesto in fondo alla scheda, perché l'etichetta
+  di una giornata intera («temporale») spesso descrive ore lontanissime dalla cerimonia.
+  Tutto compare quando la data rientra nei 16 giorni coperti dal modello.
 
 Dati da [Open-Meteo](https://open-meteo.com/) — gratuito, senza API key.
 
@@ -72,6 +78,7 @@ python3 -m http.server 8000       # poi apri http://localhost:8000
 
 ## Personalizzazioni rapide
 
-- **Data/ora**: `TARGET`, `WEDDING_DAY` e `WEDDING_HOUR` in `assets/app.js`, più il titolo in `index.html`.
+- **Data/ora**: `TARGET`, `WEDDING_DAY`, `WEDDING_HOUR` e la finestra `WINDOW_START` / `WINDOW_END`
+  in `assets/app.js`, più i testi in `index.html`.
 - **Luogo**: `LAT`/`LON` in `scripts/fetch-weather.js` **e** in `assets/app.js`.
 - **Frequenza**: la riga `cron:` in `.github/workflows/weather.yml`.

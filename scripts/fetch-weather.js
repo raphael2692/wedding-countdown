@@ -13,7 +13,7 @@ const url =
   'https://api.open-meteo.com/v1/forecast' +
   `?latitude=${LAT}&longitude=${LON}` +
   '&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,is_day' +
-  '&hourly=temperature_2m,precipitation_probability,weather_code' +
+  '&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,cloud_cover,relative_humidity_2m' +
   '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max' +
   `&timezone=${encodeURIComponent(TZ)}&forecast_days=16`;
 
@@ -33,6 +33,7 @@ async function main() {
         current: api.current,
         current_units: api.current_units,
         hourly: api.hourly,
+        hourly_units: api.hourly_units,
         daily: api.daily,
         daily_units: api.daily_units,
       };

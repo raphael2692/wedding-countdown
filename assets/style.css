@@ -289,48 +289,6 @@ main {
   text-align: center;
 }
 
-/* ---------- forecast ---------- */
-
-.forecast-scroll { overflow-x: auto; padding-bottom: .6rem; -webkit-overflow-scrolling: touch; }
-
-.forecast {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(6.6rem, 1fr);
-  gap: .7rem;
-  min-width: min(100%, 46rem);
-}
-
-.day {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1rem .55rem;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-
-.day.is-wedding {
-  border-color: var(--accent);
-  box-shadow: var(--shadow), inset 0 0 0 1px var(--accent);
-}
-
-.day .dow {
-  font-size: .62rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.day .dnum { font-size: .78rem; color: var(--ink-soft); margin-top: .15rem; }
-.day .ico { margin: .6rem auto .5rem; display: block; }
-.day .t {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 1.28rem;
-  font-variant-numeric: tabular-nums;
-}
-.day .t .min { color: var(--muted); font-size: .78em; }
-.day .pp { font-size: .68rem; color: var(--sage); margin-top: .3rem; min-height: 1em; }
-
 /* ---------- icons ---------- */
 
 .wicon { display: block; color: var(--accent); }
@@ -401,3 +359,133 @@ footer a:hover { text-decoration: underline; }
 
 .wd-hour .h-desc { color: var(--ink-soft); font-size: .92rem; }
 .wd-hour .ico { margin: 0; }
+
+/* ---------- dettaglio orario: grafici ---------- */
+
+:root {
+  --c-rain: #4f7d9e;
+  --c-temp: #b08a4e;
+  --grid: #e8e4da;
+  --surface: #ffffff;
+  --ceremony-row: rgba(164, 133, 90, .11);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-rain: #5f9cc0;
+    --c-temp: #c29a55;
+    --grid: #2b3236;
+    --surface: #1c2225;
+    --ceremony-row: rgba(201, 168, 117, .13);
+  }
+}
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 1.15rem 1.15rem .8rem;
+  margin-bottom: 1rem;
+}
+
+.chart-head { margin-bottom: .5rem; }
+
+.chart-head h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 400;
+  font-size: 1.28rem;
+}
+
+.chart-head p { margin: .1rem 0 0; font-size: .72rem; color: var(--muted); }
+
+.chart-box { position: relative; }
+
+.chart { width: 100%; height: 186px; display: block; overflow: visible; }
+.chart-box { min-height: 186px; }
+
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .axis { stroke: var(--line); stroke-width: 1; }
+.chart .ax { fill: var(--muted); font-size: 11px; font-family: Inter, sans-serif; }
+.chart .val { fill: var(--ink-soft); font-size: 12px; font-weight: 500; font-family: Inter, sans-serif; }
+.chart .hit { fill: transparent; cursor: default; }
+
+.c-rain .mark path { fill: var(--c-rain); }
+.c-temp .line { fill: none; stroke: var(--c-temp); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.c-temp .area { fill: var(--c-temp); opacity: .1; }
+.c-temp .dot { fill: var(--c-temp); stroke: var(--surface); stroke-width: 2; }
+
+.chart-tip {
+  position: absolute;
+  top: -.2rem;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  font-size: .72rem;
+  padding: .32rem .6rem;
+  border-radius: 7px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ---------- dettaglio orario: tabella ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+table.hourly { width: 100%; border-collapse: collapse; font-size: .84rem; min-width: 30rem; }
+
+table.hourly th, table.hourly td { padding: .6rem .7rem; text-align: right; white-space: nowrap; }
+
+table.hourly thead th {
+  font-size: .6rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--line);
+}
+
+table.hourly tbody th {
+  text-align: left;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+table.hourly td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+table.hourly tbody tr + tr th, table.hourly tbody tr + tr td { border-top: 1px solid var(--grid); }
+
+table.hourly .c-ico { text-align: left; }
+table.hourly .c-ico .ico { display: inline-block; vertical-align: -.4em; margin: 0 .4rem 0 0; }
+
+table.hourly tr.is-ceremony { background: var(--ceremony-row); }
+table.hourly tr.is-ceremony th, table.hourly tr.is-ceremony td { color: var(--ink); }
+
+.wd-scope {
+  margin: .35rem 0 0;
+  font-size: .62rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.wd-context {
+  margin: 1.2rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: .84rem;
+  color: var(--muted);
+  text-align: center;
+}
+.wd-context b { color: var(--ink-soft); font-weight: 600; }
+
+/* le prime due colonne sono testuali: intestazione allineata al contenuto */
+table.hourly thead th:nth-child(1),
+table.hourly thead th:nth-child(2) { text-align: left; }
